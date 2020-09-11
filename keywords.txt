@@ -1,0 +1,46 @@
+#######################################
+# Syntax Coloring Map For DFRobot_WiFi_IoT_Module
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+DFRobot_WiFi_IoT_Module_I2C	KEYWORD1
+DFRobot_WiFi_IoT_Module_UART	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+begin	KEYWORD2
+wifiBegin	KEYWORD2
+MQTTBegin	KEYWORD2
+HTTPBegin	KEYWORD2
+reconnectWifi	KEYWORD2
+disconnectWifi	KEYWORD2
+subscribe	KEYWORD2
+publish	KEYWORD2
+HTTPGet	KEYWORD2
+HTTPPost	KEYWORD2
+HTTPPut	KEYWORD2
+getWifiState	KEYWORD2
+getVersion	KEYWORD2
+loop	KEYWORD2
+setCallBack	KEYWORD2
+IFTTTBegin	KEYWORD2
+IFTTTSendMessage	KEYWORD2
+thingSpeakBegin	KEYWORD2
+thingSpeakMessage	KEYWORD2
+
+
+#######################################
+# Instances (KEYWORD2)
+#######################################
+
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+
