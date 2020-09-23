@@ -70,7 +70,7 @@ void setup(void){
 
 void loop(void){
   //Send data to the subscribed topic.
-  if(IOT.publish(PUBLISH_TOPIC,(uint8_t *)tempdata(DATA_STREAM_NAME, SEND_MESSAGE).c_str(),tempdata(DATA_STREAM_NAME, SEND_MESSAGE).length()) == 0){
+  if(IOT.publish(PUBLISH_TOPIC,(uint8_t *)splicingData(DATA_STREAM_NAME, SEND_MESSAGE).c_str(),splicingData(DATA_STREAM_NAME, SEND_MESSAGE).length()) == 0){
     Serial.println("Data sending Success");
   }else{
     Serial.println("Data sending timeout");
