@@ -21,7 +21,7 @@
 #define    WIFI_IOT_ERROR         5
 #define    WIFI_IOT_OK            0
 
-//#define ENABLE_DBG
+#define ENABLE_DBG
 #ifdef ENABLE_DBG
 #define DBG(...) {Serial.print("[");Serial.print(__FUNCTION__); Serial.print("(): "); Serial.print(__LINE__); Serial.print(" ] "); Serial.println(__VA_ARGS__);}
 #else

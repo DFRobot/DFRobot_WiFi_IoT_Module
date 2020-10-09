@@ -63,6 +63,10 @@ void setup() {
 }
 
 void loop() {
-  IOT.thingSpeakSendMessage(THINGSPEAK_VALUE_1, THINGSPEAK_VALUE_2, THINGSPEAK_VALUE_3);
+  if(IOT.thingSpeakSendMessage(THINGSPEAK_VALUE_1, THINGSPEAK_VALUE_2, THINGSPEAK_VALUE_3) == 0){
+    Serial.println("Data sending Success");
+  }else{
+    Serial.println("Data sending timeout");
+  }
   delay(1000);
 }

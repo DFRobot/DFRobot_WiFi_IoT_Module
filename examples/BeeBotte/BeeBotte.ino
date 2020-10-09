@@ -24,19 +24,12 @@ DFRobot_WiFi_IoT_Module_UART IOT(&mySerial);
 const char *WIFI_SSID              = "WIFI_SSID";
 const char *WIFI_PASSWORD          = "WIFI_PASSWORD";
 //Beebotte configuration
-const char *BEEBOTTE_SERVER        = "mqtt.beebotte.com";
-const char *BEEBOTTE_PORT          = "Port";
-const char *BEEBOTTE_ID            = "Your_Device_Name";
-const char *BEEBOTTE_PWD           = "Your_Device_Secret";
-const char *SUBSCRIBE_TOPIC        = "Your_Sub_Topic";
-const char *PUBLISH_TOPIC          = "Your_Pub_Topic";
+const char *BEEBOTTE_ADDRESS       = "api.beebotte.com";
+const char *BEEBOTTE_TOKEN         = "Your_Channel_Token";
+const char *BEEBOTTE_CHANNEL       = "Your_Channel_Name";
+const char *BEEBOTTE_RESOURCE      = "Your_Resource_Name";
 
 const char *BEEBOTTE_SEND_MESSAGE  = "Send_Message";
-
-//Set callback function
-void callback(const char*topic,const char*message){
- Serial.println("Receive [ " + (String)topic + "]," + "Message : " + (String)message);
-}
 
 void setup(void){
   //Using softwareserial myserial as communication serial port
@@ -55,26 +48,23 @@ void setup(void){
     delay(100);
   }
   Serial.println("Wifi Connect Success");
-  //Initialize mqtt and connect to platform
-  while(IOT.MQTTBegin(BEEBOTTE_SERVER, BEEBOTTE_PORT, BEEBOTTE_ID, BEEBOTTE_PWD) != 0){
-    Serial.print(".");
+  //
+  while(IOT.HTTPBegin(BEEBOTTE_ADDRESS) != 0){
+    Serial.println("Parameter is empty!");
     delay(100);
   }
-  Serial.println("MQTT Connect Success");
-  //Set callback function
-  IOT.setCallBack(callback);
-  //Subscribe to topics
-  while(IOT.subscribe(SUBSCRIBE_TOPIC) != 0){
-    Serial.print(".");
+  Serial.println("HTTP Configuration Succeeded");
+  //Initialize beebotte 
+  while(IOT.beebotteBegin(BEEBOTTE_TOKEN) != 0){
+    Serial.print("Parameter is empty!");
     delay(100);
   }
-  Serial.println("Subscribe Topic Success");
+  Serial.println("Beebotte Configuration Succeeded");
 }
 
 void loop(void){
-  //Send data to the subscribed topic.
-  if(IOT.publish(PUBLISH_TOPIC, BEEBOTTE_SEND_MESSAGE) == 0){
-      IOT.loop();
+  if(IOT.beebotteSendMessage(BEEBOTTE_CHANNEL, BEEBOTTE_RESOURCE, BEEBOTTE_SEND_MESSAGE) == 0){
+      Serial.println("Data sending Success");
   }else{
     Serial.println("Data sending timeout");
   }

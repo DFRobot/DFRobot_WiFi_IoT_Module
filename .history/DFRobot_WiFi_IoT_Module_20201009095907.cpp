@@ -585,6 +585,7 @@ uint8_t DFRobot_WiFi_IoT_Module_I2C::readReg(uint8_t reg, void *pBuf, size_t siz
   _pWire->write(reg);
   _pWire->write(IOT_READ_COMMAND);
   _pWire->write(READ_COMMAND);
+  //_pWire->endTransmission();
   if(_pWire->endTransmission() != 0){
     return 0;
   }

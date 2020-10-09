@@ -585,6 +585,7 @@ uint8_t DFRobot_WiFi_IoT_Module_I2C::readReg(uint8_t reg, void *pBuf, size_t siz
   _pWire->write(reg);
   _pWire->write(IOT_READ_COMMAND);
   _pWire->write(READ_COMMAND);
+  //_pWire->endTransmission();
   if(_pWire->endTransmission() != 0){
     return 0;
   }
@@ -621,9 +622,11 @@ uint8_t DFRobot_WiFi_IoT_Module_I2C::parameterReturn(uint8_t config, uint8_t con
   uint32_t startingTime = millis();
   if(readReg(IOT_COMMAND_REGTSTER, &buffer, 2) != 2){
     DBG("READ WIFI_IOT_ERROR!!!!!!");
+    //return false;
   }else{
     DBG(buffer[0]);
     if(buffer[0] == config){
+      //DBG("A");
       uint8_t datalen = buffer[1];
       uint8_t *data = (uint8_t *)malloc(sizeof(uint8_t)*datalen);
       if(data == NULL){
@@ -631,12 +634,16 @@ uint8_t DFRobot_WiFi_IoT_Module_I2C::parameterReturn(uint8_t config, uint8_t con
       }
       if(getData(READ_DATA_REGISTER, data, datalen) != datalen){
         DBG("READ WIFI_IOT_ERROR!!!!!!");
+          //return false;
       }else{
         for(uint8_t i =0; i < datalen ; i++){
           pBuf[i] = data[i];
         }
         pBuf[datalen]= '\0';
         DBG("true");
+		//buffer[0] = 0;
+		//readReg(IOT_COMMAND_REGTSTER, &buffer, 2);
+		//DBG(buffer[0]);
         free(data);
         return 0;
       }
@@ -1048,6 +1055,7 @@ uint8_t DFRobot_WiFi_IoT_Module_I2C::beebotteSendMessage(char *channel, char *re
   postRequest += (String)recv;
   uint8_t recvHTTPData[100];
   manageFunction(IOT_RUN_COMMAND, HTTP_POST_URL_CON, (uint8_t*)postRequest.c_str());
+  //delay(30);
   uint32_t startingTime = millis();
   while(true){
     uint8_t state = parameterReturn(HTTP_NORMAL_RETURN, HTTP_ERROR_RETURN, &recvHTTPData[0]);

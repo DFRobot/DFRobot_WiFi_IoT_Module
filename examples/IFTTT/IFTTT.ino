@@ -65,6 +65,10 @@ void setup() {
 }
 
 void loop() {
-  IOT.IFTTTSendMessage(IFTTT_VALUE_1, IFTTT_VALUE_2, IFTTT_VALUE_3);
+  if(IOT.IFTTTSendMessage(IFTTT_VALUE_1, IFTTT_VALUE_2, IFTTT_VALUE_3) == 0){
+    Serial.println("Data sending Success");
+  }else{
+    Serial.println("Data sending timeout");
+  }
   delay(1000);
 }
