@@ -2,8 +2,6 @@
 
 This library enables the Wifi IoT module to access IoT platforms like IFTTT, BeeBotte and Easy_IoT, SIot, OneNET, and ThingSpeak.
 
-![正反面svg效果图]()
-
    
 ## Table of Contents
 
