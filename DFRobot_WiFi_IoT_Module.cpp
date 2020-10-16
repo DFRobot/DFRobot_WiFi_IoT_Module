@@ -965,10 +965,15 @@ uint8_t DFRobot_WiFi_IoT_Module::thingSpeakBegin(char *key)
 
 uint8_t DFRobot_WiFi_IoT_Module_UART::thingSpeakSendMessage(char* data1, char *data2, char *data3)
 {
-  String sendData = ("update?api_key=" + (String)_thingspeeakkey +
-                    "&field1=" + (String)data1 +
-                    "&field2=" + (String)data2 +
-                    "&field3=" + (String)data3);
+  String sendData = "update?api_key=";
+  sendData += (String)_thingspeeakkey;
+  sendData += "&field1=;
+  sendData += (String)data1;
+  sendData += "&field2=";
+  sendData += (String)data2;
+  sendData += "&field3=";
+  sendData += (String)data3;
+ 
   HTTPGet((char*)sendData.c_str());
   uint32_t startingTime = millis();
   while(true){
