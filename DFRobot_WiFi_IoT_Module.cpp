@@ -496,6 +496,7 @@ uint8_t DFRobot_WiFi_IoT_Module_I2C::loop()
 
 uint8_t DFRobot_WiFi_IoT_Module_I2C::IFTTTSendMessage(char *data1, char *data2, char *data3)
 {
+  uint8_t recvHTTPData[100];
   String sendData = ""; 
   sendData += "{\"value1\":\"";
   sendData += data1;
@@ -509,13 +510,13 @@ uint8_t DFRobot_WiFi_IoT_Module_I2C::IFTTTSendMessage(char *data1, char *data2, 
   url += _iftttevent;
   url += "/with/key/";
   url += _iftttkey;
-  uint8_t recvHTTPData[100];
+  
   String ur2 = "";
   ur2 += url;
   ur2 += ',';
   ur2 += sendData;
   DBG(url);
-  manageFunction(IOT_RUN_COMMAND, HTTP_POST_URL_CON, (uint8_t*)ur2.c_str());
+  manageFunction(IOT_RUN_COMMAND,HTTP_POST_URL_CON,(char*)ur2.c_str(),ur2.length());
   uint8_t state = parameterReturn(HTTP_NORMAL_RETURN, HTTP_ERROR_RETURN, &recvHTTPData[0]);
   if(state == 0){
     return 0;
