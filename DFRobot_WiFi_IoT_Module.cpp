@@ -1053,7 +1053,7 @@ uint8_t DFRobot_WiFi_IoT_Module_I2C::beebotteSendMessage(char *channel, char *re
   postRequest += ',';
   postRequest += (String)recv;
   uint8_t recvHTTPData[100];
-  manageFunction(IOT_RUN_COMMAND, HTTP_POST_URL_CON, (uint8_t*)postRequest.c_str());
+  manageFunction(IOT_RUN_COMMAND, HTTP_POST_URL_CON, (uint8_t*)postRequest.c_str(),postRequest.length());
   uint32_t startingTime = millis();
   while(true){
     uint8_t state = parameterReturn(HTTP_NORMAL_RETURN, HTTP_ERROR_RETURN, &recvHTTPData[0]);
