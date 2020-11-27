@@ -384,7 +384,7 @@ uint8_t DFRobot_WiFi_IoT_Module_I2C::getMQTTSendState()
     if(buffer[0] == GET_MQTTSEND_STATUE){
       if(buffer[1] == MQTT_SEND_SUCCESS){
         DBG("MQTT_SEND_SUCCESS");
-        return 1;
+        return 1
       }else if(buffer[1] == MQTT_SEND_ERROR){
         DBG("MQTT_SEND_ERROR");
         return 2;
@@ -438,7 +438,7 @@ char* DFRobot_WiFi_IoT_Module_I2C::getVersion()
   uint8_t getVersionData[5];
   connection(QUERY_VERSION);
   delay(10);
-  uint8_t state = parameterReturn(HTTP_NORMAL_RETURN, HTTP_ERROR_RETURN, &getVersionData[0]);
+  uint8_t state = parameterReturn(GET_VERSION, 0x00, &getVersionData[0]);
   if(state != 0){
     DBG("Parameter return failed");
     return;
