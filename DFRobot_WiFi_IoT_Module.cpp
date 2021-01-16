@@ -384,7 +384,7 @@ uint8_t DFRobot_WiFi_IoT_Module_I2C::getMQTTSendState()
     if(buffer[0] == GET_MQTTSEND_STATUE){
       if(buffer[1] == MQTT_SEND_SUCCESS){
         DBG("MQTT_SEND_SUCCESS");
-        return 1
+        return 1;
       }else if(buffer[1] == MQTT_SEND_ERROR){
         DBG("MQTT_SEND_ERROR");
         return 2;
@@ -968,7 +968,7 @@ uint8_t DFRobot_WiFi_IoT_Module_UART::thingSpeakSendMessage(char* data1, char *d
 {
   String sendData = "update?api_key=";
   sendData += (String)_thingspeeakkey;
-  sendData += "&field1=;
+  sendData += "&field1=";
   sendData += (String)data1;
   sendData += "&field2=";
   sendData += (String)data2;
