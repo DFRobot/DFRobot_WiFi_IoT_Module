@@ -82,18 +82,18 @@ public:
   /**
    * @brief HTTPget URL
    */
-  virtual char* HTTPGet(char *getUrl = NULL) = 0;
+  virtual String HTTPGet(char *getUrl = NULL) = 0;
   /**
    * @brief HTTPPost
    * @param postUrl URL
    * @param data  Data to be sent
    */
-  virtual char* HTTPPost(char* postUrl, char* data) = 0;
+  virtual String HTTPPost(char* postUrl, char* data) = 0;
   /**
    * @brief Get version number
    * @return Version information
    */
-  virtual char* getVersion() = 0;
+  virtual String getVersion() = 0;
   /**
    * @brief Loop read status
    */
@@ -315,18 +315,18 @@ public:
   /**
    * @brief HTTPget URL
    */
-  char* HTTPGet(char *getUrl = NULL);
+  String HTTPGet(char *getUrl = NULL);
   /**
    * @brief HTTPPost
    * @param postUrl URL
    * @param data Data to be sent
    */
-  char* HTTPPost(char* postUrl, char* data);
+  String HTTPPost(char* postUrl, char* data);
   /**
    * @brief Get version number
    * @return Version information
    */
-  char* getVersion();
+  String getVersion();
   /**
    * @brief  Loop read status
    */
@@ -548,13 +548,13 @@ public:
    * @param ip Server address
    * @return True：succeeded, false: failed
    */
-  uint8_t HTTPBegin(char *ip = NULL){
+  uint8_t HTTPBegin(char *ip = NULL);/*{
     if( _httpip != ip){
       _httpip = ip;
       return 0;
     }
     return -1;
-  }
+  }*/
   /**
    * @brief Title Subscription, up to 5
    * @param topic  Subscription channel 
@@ -579,42 +579,18 @@ public:
   /**
    * @brief HTTPget URL
    */
-  char* HTTPGet(char *getUrl = NULL){
-    String httpGetMag = "";
-    httpGetMag +="|3|1|http://";
-    httpGetMag +=_httpip;
-    httpGetMag +="/";
-    httpGetMag +=getUrl;
-    httpGetMag +=_separator;
-    httpGetMag += "\r";
-    DBG(httpGetMag);
-    _s->print(httpGetMag);
-    
-  }
+ String HTTPGet(char *getUrl = NULL);
   /**
    * @brief HTTPPost
    * @param postUrl URL
    * @param data Data to be sent
    */
-  char* HTTPPost(char* postUrl, char* data){
-    String httpPostMag ="";
-    httpPostMag += "|3|2|http://";
-    httpPostMag += _httpip;
-    httpPostMag += "/";
-    httpPostMag += postUrl;
-    httpPostMag += ",";
-    httpPostMag += data;
-    httpPostMag += _separator;
-    httpPostMag += "\r";
-    DBG(httpPostMag);
-    _s->print(httpPostMag);
-    return _receiveStringIndex[3].c_str();
-  } 
+  String HTTPPost(char* postUrl, char* data);
   /**
    * @brief Get version number
    * @return Version information
    */
-  char* getVersion();
+  String getVersion();
   /**
    * @brief  Loop read status
    */

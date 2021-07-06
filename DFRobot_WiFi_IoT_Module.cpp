@@ -210,25 +210,65 @@ uint8_t DFRobot_WiFi_IoT_Module_I2C::HTTPBegin(char *ip)
   return 0;
 }
 
-char* DFRobot_WiFi_IoT_Module_I2C::HTTPGet(char *url)
+uint8_t DFRobot_WiFi_IoT_Module_UART::HTTPBegin(char *ip)
+{
+   if( _httpip != ip){
+      _httpip = ip;
+      return 0;
+    }
+    return -1;
+}
+
+String DFRobot_WiFi_IoT_Module_I2C::HTTPGet(char *url)
 {
   uint8_t recvHTTPData[25];
   manageFunction(IOT_RUN_COMMAND, HTTP_GET_URL, url);
   uint32_t startingTime = millis();
   while(true){
     uint8_t state = parameterReturn(HTTP_NORMAL_RETURN, HTTP_ERROR_RETURN, &recvHTTPData[0]);
+    
     if(state == 0){
       return (char*)recvHTTPData;
     }
     uint32_t currentTime = millis();
     if((currentTime-startingTime) > 100000){
-      return -1;
+      return "timeout";
     }
   }
-  return;
 }
 
-char* DFRobot_WiFi_IoT_Module_I2C::HTTPPost(char* postUrl, char* data)
+String DFRobot_WiFi_IoT_Module_UART::HTTPGet(char *url)
+{
+  String comdata = "";
+  String httpGetMag = "";
+  httpGetMag +="|3|1|http://";
+  httpGetMag +=_httpip;
+  httpGetMag +="/";
+  httpGetMag +=url;
+  httpGetMag +=_separator;
+  httpGetMag += "\r";
+  DBG(httpGetMag);
+  //Serial.print(httpGetMag);
+  _s->print(httpGetMag);
+  uint32_t startingTime = millis();
+  while(true){
+    if(receiveData() != 0){
+      return "read error";
+    }
+    if(_receiveStringIndex[httpProtocol::httpType] == HTTPTYPE){
+      if(_receiveStringIndex[httpProtocol::httpCode] == "200"){
+        return _receiveStringIndex[httpProtocol::httpMessage];
+      }
+    }
+    delay(100);
+    uint32_t currentTime = millis();
+    if((currentTime-startingTime) > 10000){
+      return "timeout";
+    }
+  }
+}
+
+String DFRobot_WiFi_IoT_Module_I2C::HTTPPost(char* postUrl, char* data)
 {
   uint8_t recvHTTPData[25];
   String url = "";
@@ -245,10 +285,40 @@ char* DFRobot_WiFi_IoT_Module_I2C::HTTPPost(char* postUrl, char* data)
     }
     uint32_t currentTime = millis();
     if((currentTime-startingTime) > 100000){
-      return -1;
+      return "timeout";
     }
   }
-  return;
+}
+
+String DFRobot_WiFi_IoT_Module_UART::HTTPPost(char* postUrl, char* data)
+{
+  String httpPostMag ="";
+    httpPostMag += "|3|2|http://";
+    httpPostMag += _httpip;
+    httpPostMag += "/";
+    httpPostMag += postUrl;
+    httpPostMag += ",";
+    httpPostMag += data;
+    httpPostMag += _separator;
+    httpPostMag += "\r";
+    DBG(httpPostMag);
+    _s->print(httpPostMag);
+  uint32_t startingTime = millis();
+  while(true){
+    if(receiveData() != 0){
+      return "read error";
+    }
+    if(_receiveStringIndex[httpProtocol::httpType] == HTTPTYPE){
+      if(_receiveStringIndex[httpProtocol::httpCode] == "200"){
+        return _receiveStringIndex[httpProtocol::httpMessage];
+      }
+    }
+    delay(100);
+    uint32_t currentTime = millis();
+    if((currentTime-startingTime) > 10000){
+      return "timeout";
+    }
+  }
 }
 
 void DFRobot_WiFi_IoT_Module_I2C::manageFunction(uint8_t command, uint8_t config, String data)
@@ -433,7 +503,7 @@ void DFRobot_WiFi_IoT_Module_I2C::connection(uint8_t command)
   writeReg(IOT_COMMAND_REGTSTER, &buffer, 2);	
 }
 
-char* DFRobot_WiFi_IoT_Module_I2C::getVersion()
+String DFRobot_WiFi_IoT_Module_I2C::getVersion()
 {
   uint8_t getVersionData[5];
   connection(QUERY_VERSION);
@@ -790,11 +860,11 @@ uint8_t DFRobot_WiFi_IoT_Module_UART::subscribe(char *topic = NULL)
   }
 }
 
-char* DFRobot_WiFi_IoT_Module_UART::getVersion(void)
+String DFRobot_WiFi_IoT_Module_UART::getVersion(void)
 {
-  _s->print("|1|1|\r");
+  _s->print("|1|2|\r");
   if(receiveData() != 0){
-    return -1;
+    return;
   }
   if(_receiveStringIndex[systemProtocol::systemType] == SYSTEMTYPE){
     DBG("init");
@@ -802,7 +872,7 @@ char* DFRobot_WiFi_IoT_Module_UART::getVersion(void)
       _firmwareVersion = _receiveStringIndex[systemProtocol::systemMessage];
     }
   } 
-  return _firmwareVersion.c_str();
+  return _firmwareVersion;
 }
 
 uint8_t DFRobot_WiFi_IoT_Module_UART::publish(char *topic, String data)
