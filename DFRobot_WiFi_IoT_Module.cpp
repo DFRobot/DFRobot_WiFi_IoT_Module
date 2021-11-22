@@ -6,6 +6,8 @@ uint8_t DFRobot_WiFi_IoT_Module_I2C::begin(void)
   uint8_t buffer[2];
   _pWire->begin();
   if(readReg(0,buffer, 2) == 2 ){
+
+    clearBuffer();
     DBG("WIFI_IOT_OK");
     return WIFI_IOT_OK;
   }
@@ -97,6 +99,16 @@ uint8_t DFRobot_WiFi_IoT_Module_I2C::subscribe(char *topic)
     return 0;
   }
   return getTopicState();
+}
+
+void DFRobot_WiFi_IoT_Module_I2C::clearBuffer(void)
+{
+  uint8_t buf[10];
+  buf[0] = 0x02;
+  buf[1] = 0x17;
+  writeReg(0x1E, buf, (uint8_t)2);
+  //Serial.println("clear buffer!");
+  delay(1000);
 }
 
 uint8_t DFRobot_WiFi_IoT_Module_I2C::publish(char *topic, String data)
@@ -196,6 +208,7 @@ uint8_t DFRobot_WiFi_IoT_Module_I2C::publish(char *topic, uint8_t *data, uint16_
       ret = -1;
       break;
     }
+    
   }
   return ret;
 }
@@ -224,17 +237,16 @@ String DFRobot_WiFi_IoT_Module_I2C::HTTPGet(char *url)
   uint8_t recvHTTPData[25];
   manageFunction(IOT_RUN_COMMAND, HTTP_GET_URL, url);
   uint32_t startingTime = millis();
-  while(true){
     uint8_t state = parameterReturn(HTTP_NORMAL_RETURN, HTTP_ERROR_RETURN, &recvHTTPData[0]);
     
     if(state == 0){
       return (char*)recvHTTPData;
-    }
-    uint32_t currentTime = millis();
-    if((currentTime-startingTime) > 100000){
+    }else if(state == 1){
       return "timeout";
     }
-  }
+    
+      
+
 }
 
 String DFRobot_WiFi_IoT_Module_UART::HTTPGet(char *url)
@@ -250,6 +262,14 @@ String DFRobot_WiFi_IoT_Module_UART::HTTPGet(char *url)
   DBG(httpGetMag);
   //Serial.print(httpGetMag);
   _s->print(httpGetMag);
+
+
+  if(receiveData() == 0){
+    return _receiveStringIndex[httpProtocol::httpMessage];
+  }else{
+    return "error";
+  }
+  /*
   uint32_t startingTime = millis();
   while(true){
     if(receiveData() != 0){
@@ -266,6 +286,7 @@ String DFRobot_WiFi_IoT_Module_UART::HTTPGet(char *url)
       return "timeout";
     }
   }
+  */
 }
 
 String DFRobot_WiFi_IoT_Module_I2C::HTTPPost(char* postUrl, char* data)
@@ -278,16 +299,12 @@ String DFRobot_WiFi_IoT_Module_I2C::HTTPPost(char* postUrl, char* data)
   DBG(url);
   manageFunction(IOT_RUN_COMMAND, HTTP_POST_URL_CON, (uint8_t*)url.c_str());
   uint32_t startingTime = millis();
-  while(true){
     uint8_t state = parameterReturn(HTTP_NORMAL_RETURN, HTTP_ERROR_RETURN, &recvHTTPData[0]);
     if(state == 0){
       return (char*)recvHTTPData;
-    }
-    uint32_t currentTime = millis();
-    if((currentTime-startingTime) > 100000){
+    }else if(state == 1){
       return "timeout";
     }
-  }
 }
 
 String DFRobot_WiFi_IoT_Module_UART::HTTPPost(char* postUrl, char* data)
@@ -302,11 +319,19 @@ String DFRobot_WiFi_IoT_Module_UART::HTTPPost(char* postUrl, char* data)
     httpPostMag += _separator;
     httpPostMag += "\r";
     DBG(httpPostMag);
+    //Serial.println(httpPostMag);
     _s->print(httpPostMag);
-  uint32_t startingTime = millis();
+    if(receiveData() == 0){
+      return _receiveStringIndex[httpProtocol::httpMessage];
+    }else{
+      return "error";
+    }
+    /*
   while(true){
+    
+    uint32_t startingTime = millis();
     if(receiveData() != 0){
-      return "read error";
+      return "error";
     }
     if(_receiveStringIndex[httpProtocol::httpType] == HTTPTYPE){
       if(_receiveStringIndex[httpProtocol::httpCode] == "200"){
@@ -315,10 +340,12 @@ String DFRobot_WiFi_IoT_Module_UART::HTTPPost(char* postUrl, char* data)
     }
     delay(100);
     uint32_t currentTime = millis();
-    if((currentTime-startingTime) > 10000){
-      return "timeout";
+    if((currentTime-startingTime) > 100000){
+      return "error";
     }
+    
   }
+  */
 }
 
 void DFRobot_WiFi_IoT_Module_I2C::manageFunction(uint8_t command, uint8_t config, String data)
@@ -546,6 +573,9 @@ uint8_t DFRobot_WiFi_IoT_Module_I2C::loop()
       return;
     }
     uint8_t datalen = buffer[1];
+    if(datalen > 0x7F){
+      return;
+    }
     uint8_t *data = (uint8_t *)malloc(sizeof(uint8_t)*datalen);
     if(data == NULL){
     Serial.print("memory allocation failed");
@@ -591,7 +621,7 @@ uint8_t DFRobot_WiFi_IoT_Module_I2C::IFTTTSendMessage(char *data1, char *data2, 
   if(state == 0){
     return 0;
   }
-  return -1;
+  return 1;
 }
 
 uint8_t DFRobot_WiFi_IoT_Module_I2C::thingSpeakSendMessage(char* data1, char *data2, char *data3)
@@ -608,17 +638,11 @@ uint8_t DFRobot_WiFi_IoT_Module_I2C::thingSpeakSendMessage(char* data1, char *da
   uint8_t recvHTTPData[100];
   manageFunction(IOT_RUN_COMMAND, HTTP_GET_URL, sendData);
   uint32_t startingTime = millis();
-  while(true){
     uint8_t state = parameterReturn(HTTP_NORMAL_RETURN, HTTP_ERROR_RETURN, &recvHTTPData[0]);
     if(state == 0){
     return 0;
     }
-    uint32_t currentTime = millis();
-    if((currentTime-startingTime) > 10000){
-      return -1;
-    }
-  }
-  return -1;
+  return 1;
 }
 
 void DFRobot_WiFi_IoT_Module_I2C::writeReg(uint8_t reg, void *pBuf, size_t size)
@@ -690,18 +714,51 @@ uint8_t DFRobot_WiFi_IoT_Module_I2C::parameterReturn(uint8_t config, uint8_t con
 {
   uint8_t buffer[2]={0};
   uint32_t startingTime = millis();
-  if(readReg(IOT_COMMAND_REGTSTER, &buffer, 2) != 2){
-    DBG("READ WIFI_IOT_ERROR!!!!!!");
-  }else{
-    DBG(buffer[0]);
-    if(buffer[0] == config){
+  while(1){
+    readReg(IOT_COMMAND_REGTSTER, &buffer, 2);
+    if(buffer[0] == config && buffer[1] < 0xFE){
       uint8_t datalen = buffer[1];
-      uint8_t *data = (uint8_t *)malloc(sizeof(uint8_t)*datalen);
+      uint8_t *data = (uint8_t *)malloc(sizeof(uint8_t)*datalen+10);
       if(data == NULL){
         Serial.print("memory allocation failed");
       }
       if(getData(READ_DATA_REGISTER, data, datalen) != datalen){
         DBG("READ WIFI_IOT_ERROR!!!!!!");
+        free(data);
+      }else{
+        for(uint8_t i =0; i < datalen ; i++){
+          pBuf[i] = data[i];
+        }
+        pBuf[datalen]= '\0';
+        DBG("true");
+        free(data);
+        return 0;
+      }
+    }else if(buffer[0] == config1 && buffer[1] < 0xFE){
+      return 2;
+    }
+    if((millis() - startingTime) > 15000){
+      return 1;
+    }
+  }
+  
+
+  
+  #if 0
+  if(readReg(IOT_COMMAND_REGTSTER, &buffer, 2) != 2){
+    DBG("READ WIFI_IOT_ERROR!!!!!!");
+  }else{
+    DBG(buffer[0]);
+    if(buffer[0] == config && buffer[1] < 0xFE){
+      
+      uint8_t datalen = buffer[1];
+      uint8_t *data = (uint8_t *)malloc(sizeof(uint8_t)*datalen+10);
+      if(data == NULL){
+        Serial.print("memory allocation failed");
+      }
+      if(getData(READ_DATA_REGISTER, data, datalen) != datalen){
+        DBG("READ WIFI_IOT_ERROR!!!!!!");
+        free(data);
       }else{
         for(uint8_t i =0; i < datalen ; i++){
           pBuf[i] = data[i];
@@ -714,11 +771,12 @@ uint8_t DFRobot_WiFi_IoT_Module_I2C::parameterReturn(uint8_t config, uint8_t con
     }else if(buffer[0] == config1){
       DBG("B");
       pBuf[0] = buffer[1];
-      return 2;
+      
     }else{
       return 1;
     }
   }
+  #endif
   return 1;
 }
 
@@ -995,23 +1053,11 @@ uint8_t DFRobot_WiFi_IoT_Module_UART::IFTTTSendMessage(char *data1, char *data2,
   url +=_iftttevent;
   url +=  "/with/key/";
   url += _iftttkey;
-  HTTPPost((char* )url.c_str(), (char*)sendData.c_str());
-  uint32_t startingTime = millis();
-  DBG(startingTime);
-  while(true){
-    if(receiveData() != 0){
-      return -1;
-    }
-    if(_receiveStringIndex[httpProtocol::httpType] == HTTPTYPE){
-      if(_receiveStringIndex[httpProtocol::httpCode] == "200"){
-        return 0;
-      }
-    }
-    uint32_t currentTime = millis();
-    if((currentTime-startingTime) > 100000){
-      return -1;
-    }
-    delay(1000);
+  String test = HTTPPost((char* )url.c_str(), (char*)sendData.c_str());
+  if(strcmp((const char*)test.c_str() ,"error") == 0){
+    return -1;
+  }else{
+    return 0;
   }
 }
 
@@ -1045,22 +1091,11 @@ uint8_t DFRobot_WiFi_IoT_Module_UART::thingSpeakSendMessage(char* data1, char *d
   sendData += "&field3=";
   sendData += (String)data3;
  
-  HTTPGet((char*)sendData.c_str());
-  uint32_t startingTime = millis();
-  while(true){
-    if(receiveData() !=0){
-      return -1;
-    }
-    if(_receiveStringIndex[httpProtocol::httpType] == HTTPTYPE){
-      if(_receiveStringIndex[httpProtocol::httpCode] == "200"){
-        return 0;
-      }
-    }
-    uint32_t currentTime = millis();
-    if((currentTime-startingTime) > 100000){
-      return -1;
-    }
-    delay(1000);
+  String test = HTTPGet((char*)sendData.c_str());
+  if(strcmp((const char*)test.c_str() ,"error") == 0){
+    return -1;
+  }else{
+    return 0;
   }
 }
 
@@ -1069,7 +1104,7 @@ uint8_t DFRobot_WiFi_IoT_Module_UART::receiveData(void)
   String data = "";
   uint32_t timecnt = millis();
   while(!_s->available()){
-    if((millis()-timecnt) >10000){
+    if((millis()-timecnt) >15000){
       return -1;
     }
   }
@@ -1080,9 +1115,12 @@ uint8_t DFRobot_WiFi_IoT_Module_UART::receiveData(void)
     if(index != 255){
       break;
     }
-    delay(10);
+    delay(5);
   }
+
   DBG(data);
+  // Serial.println("------");
+  // Serial.println(data);
   uint8_t length = data.length();
   uint8_t index = data.indexOf('\r');
   String subData = data.substring(0,index);
@@ -1125,20 +1163,17 @@ uint8_t DFRobot_WiFi_IoT_Module_I2C::beebotteSendMessage(char *channel, char *re
   uint8_t recvHTTPData[100];
   manageFunction(IOT_RUN_COMMAND, HTTP_POST_URL_CON, (uint8_t*)postRequest.c_str(),postRequest.length());
   uint32_t startingTime = millis();
-  while(true){
+  
     uint8_t state = parameterReturn(HTTP_NORMAL_RETURN, HTTP_ERROR_RETURN, &recvHTTPData[0]);
     if( state == 0){
       return 0;
 	  DBG("S");
     }else if(state == 2){
       return 2;
+    }else{
+      return 1;
     }
-    uint32_t currentTime = millis();
-    if((currentTime-startingTime) >= 10000){
-      return 2;
-    }
-    delay(2000);
-  }
+    
 }
 
 uint8_t DFRobot_WiFi_IoT_Module_UART::beebotteSendMessage(char *channel, char *resource ,char *data)
@@ -1152,21 +1187,10 @@ uint8_t DFRobot_WiFi_IoT_Module_UART::beebotteSendMessage(char *channel, char *r
   postRequest += "?token=";
   postRequest += (String)_token;
   DBG(postRequest);
-  HTTPPost((char*)postRequest.c_str(),(char*)recv.c_str());
-  uint32_t startingTime = millis();
-  while(true){
-    if(receiveData() != 0){
-      return -1;
-    }
-    if(_receiveStringIndex[httpProtocol::httpType] == HTTPTYPE){
-      if(_receiveStringIndex[httpProtocol::httpCode] == "200"){
-        return 0;
-      }
-    }
-    delay(100);
-    uint32_t currentTime = millis();
-    if((currentTime-startingTime) > 10000){
-      return -1;
-    }
+  String test = HTTPPost((char*)postRequest.c_str(),(char*)recv.c_str());
+  if(strcmp((const char*)test.c_str() ,"error") == 0){
+    return -1;
+  }else{
+    return 0;
   }
 }
