@@ -12,30 +12,28 @@
  * @url          https://github.com/DFRobot/DFRobot_WiFi_IOT_Module
  */
 #include "DFRobot_WiFi_IoT_Module.h"
-//#include <SoftwareSerial.h>
+#include <SoftwareSerial.h>
 
 //I2C mode
-DFRobot_WiFi_IoT_Module_I2C IOT;
+//DFRobot_WiFi_IoT_Module_I2C IOT;
 //UART mode
 //Use software serial port RX:10,TX:11
-//SoftwareSerial    mySerial(10, 11);
-//DFRobot_WiFi_IoT_Module_UART IOT(&mySerial);
+SoftwareSerial    mySerial(10, 11);
+DFRobot_WiFi_IoT_Module_UART IOT(&mySerial);
 
 //Configure WiFi name and password
-const char *WIFI_SSID                = "thewayout-CD";
-const char *WIFI_PASSWORD            = "dfrobot2017";
+const char *WIFI_SSID                = "WIFI_SSID";
+const char *WIFI_PASSWORD            = "WIFI_PASSWORD";
 //Easy IOT EN configuration
-const char *EASY_IOT_SERVER          = "ny3.blynk.cloud";
+const char *EASY_IOT_SERVER          = "iot.dfrobot.com.cn";
 //Easy IOT EN configuration
 //const char *EASY_IOT_SERVER        = "iot.dfrobot.com";
 const char *EASY_IOT_PORT            = "1883";
-const char *EASY_IOT_ID              = "device";
-const char *EASY_IOT_PWD             = "xvKS24Oj7ZmoKCF1I0a_FlboJSbMpnpo";
-//const char *SUBSCRIBE_TOPIC          = "downlink/#";
-const char *SUBSCRIBE_TOPIC          = "downlink/ds/V0";
-const char *SUBS_TOPIC1         = "ds/Double V0";
-const char *PUBLISH_TOPIC            = "ds/Double V0";
-const char *EASY_IOT_SEND_MESSAGE    = "12";
+const char *EASY_IOT_ID              = "Your_Device_Name";
+const char *EASY_IOT_PWD             = "Your_Device_Secret";
+const char *SUBSCRIBE_TOPIC          = "Your_Sub_Topic";
+const char *PUBLISH_TOPIC            = "Your_Pub_Topic";
+const char *EASY_IOT_SEND_MESSAGE    = "Send_Message";
 
 //Set callback function
 void callback(const char*topic,const char*message){
@@ -44,7 +42,7 @@ void callback(const char*topic,const char*message){
 
 void setup(void){
   //Use softwareserial myserial as communication serial port
-  //mySerial.begin(9600);
+  mySerial.begin(9600);
   //Use serial as print serial port
   Serial.begin(115200);
   //Init communication port
@@ -73,11 +71,6 @@ void setup(void){
     delay(100);
   }
   Serial.println("Subscribe Topic Success");
-  while(IOT.subscribe(SUBS_TOPIC1) != 0){
-    Serial.print(".");
-    delay(100);
-  }
-  Serial.println("Subscribe Topic Success");
 }
 
 void loop(void){
@@ -87,5 +80,5 @@ void loop(void){
   }else{
     Serial.println("Data sending timeout");
   }
-  delay(500);
+  delay(1000);
 }
