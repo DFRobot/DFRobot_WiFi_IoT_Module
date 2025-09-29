@@ -418,6 +418,14 @@ uint8_t DFRobot_WiFi_IoT_Module_I2C::getWifiState()
       if(buffer[1] == WIFI_SUCCESS_CON){
         DBG("WIFI SUCCESS CON");
         _wifiState = WIFI_SUCCESS_CON;            //WiFi connected
+        readReg(IOT_COMMAND_REGTSTER, &buffer, 2);
+        readReg(IOT_COMMAND_REGTSTER, &buffer, 2);
+        readReg(IOT_COMMAND_REGTSTER, &buffer, 2);
+        readReg(IOT_COMMAND_REGTSTER, &buffer, 2);
+        readReg(IOT_COMMAND_REGTSTER, &buffer, 2);
+        readReg(IOT_COMMAND_REGTSTER, &buffer, 2);
+        readReg(IOT_COMMAND_REGTSTER, &buffer, 2);
+        readReg(IOT_COMMAND_REGTSTER, &buffer, 2);
         return 0;
       }else if(buffer[1] == WIFI_NO_CON){
         DBG("WIFI NO CON");
