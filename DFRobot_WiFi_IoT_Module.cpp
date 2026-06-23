@@ -14,7 +14,7 @@ uint8_t DFRobot_WiFi_IoT_Module_I2C::begin(void)
   return WIFI_IOT_ERROR;
 }
 
-uint8_t DFRobot_WiFi_IoT_Module_I2C::connectWifi(char *ssid, char *pwd)
+uint8_t DFRobot_WiFi_IoT_Module_I2C::connectWifi(const char *ssid, const char *pwd)
 {
   if(_wifiSSID != ssid){
     DBG("WIFI");
@@ -26,7 +26,7 @@ uint8_t DFRobot_WiFi_IoT_Module_I2C::connectWifi(char *ssid, char *pwd)
   return getWifiState();
 }
 
-uint8_t DFRobot_WiFi_IoT_Module_I2C::MQTTBegin(char *server, char *port, char *productID, char *pwd, char* deviceID = NULL)
+uint8_t DFRobot_WiFi_IoT_Module_I2C::MQTTBegin(const char *server, const char *port, const char *productID, const char *pwd, const char* deviceID)
 {
   if(_mqttproductID != productID || _mqttPwd != pwd || _mqttServer != server || _mqttPort != port ){
     DBG("MQTT");
@@ -52,9 +52,9 @@ uint8_t DFRobot_WiFi_IoT_Module_I2C::MQTTBegin(char *server, char *port, char *p
   return getMQTTState();
 }
 
-uint8_t DFRobot_WiFi_IoT_Module_I2C::subscribe(char *topic)
+uint8_t DFRobot_WiFi_IoT_Module_I2C::subscribe(const char *topic)
 {
-  char *_topic = topic;
+  const char *_topic = topic;
   static uint8_t num = 0, subscribeTopic = 0;
   if(num>5){
     return FULL_SUBSCRIPTINO;
@@ -110,10 +110,10 @@ void DFRobot_WiFi_IoT_Module_I2C::clearBuffer(void)
   delay(1000);
 }
 
-uint8_t DFRobot_WiFi_IoT_Module_I2C::publish(char *topic, String data)
+uint8_t DFRobot_WiFi_IoT_Module_I2C::publish(const char *topic, String data)
 {
   uint8_t ret = -1;
-  char *_topic = topic;
+  const char *_topic = topic;
   if((!data) || (!_topic)){
     ret = 3;
   }else{
@@ -160,10 +160,10 @@ uint8_t DFRobot_WiFi_IoT_Module_I2C::publish(char *topic, String data)
   }
   return ret;
 }
-uint8_t DFRobot_WiFi_IoT_Module_I2C::publish(char *topic, uint8_t *data, uint16_t len)
+uint8_t DFRobot_WiFi_IoT_Module_I2C::publish(const char *topic, uint8_t *data, uint16_t len)
 {
   uint8_t ret = -1;
-  char *_topic = topic;
+  const char *_topic = topic;
   if((!data) || (!_topic)){
     ret = 3;
   }else{
@@ -212,7 +212,7 @@ uint8_t DFRobot_WiFi_IoT_Module_I2C::publish(char *topic, uint8_t *data, uint16_
   return ret;
 }
 
-uint8_t DFRobot_WiFi_IoT_Module_I2C::HTTPBegin(char *ip)
+uint8_t DFRobot_WiFi_IoT_Module_I2C::HTTPBegin(const char *ip)
 {
   if((!ip)){
     return -1;
@@ -222,7 +222,7 @@ uint8_t DFRobot_WiFi_IoT_Module_I2C::HTTPBegin(char *ip)
   return 0;
 }
 
-uint8_t DFRobot_WiFi_IoT_Module_UART::HTTPBegin(char *ip)
+uint8_t DFRobot_WiFi_IoT_Module_UART::HTTPBegin(const char *ip)
 {
    if( _httpip != ip){
       _httpip = ip;
@@ -231,11 +231,10 @@ uint8_t DFRobot_WiFi_IoT_Module_UART::HTTPBegin(char *ip)
     return 1;
 }
 
-String DFRobot_WiFi_IoT_Module_I2C::HTTPGet(char *url)
+String DFRobot_WiFi_IoT_Module_I2C::HTTPGet(const char *url)
 {
   uint8_t recvHTTPData[256];
   manageFunction(IOT_RUN_COMMAND, HTTP_GET_URL, url);
-  uint32_t startingTime = millis();
   uint8_t state = parameterReturn(HTTP_NORMAL_RETURN, HTTP_ERROR_RETURN, &recvHTTPData[0]);  
   if(state == 0){
     return (char*)recvHTTPData;
@@ -245,7 +244,7 @@ String DFRobot_WiFi_IoT_Module_I2C::HTTPGet(char *url)
   return "error";
 }
 
-String DFRobot_WiFi_IoT_Module_UART::HTTPGet(char *url)
+String DFRobot_WiFi_IoT_Module_UART::HTTPGet(const char *url)
 {
   String comdata = "";
   String httpGetMag = "";
@@ -285,7 +284,7 @@ String DFRobot_WiFi_IoT_Module_UART::HTTPGet(char *url)
   */
 }
 
-String DFRobot_WiFi_IoT_Module_I2C::HTTPPost(char* postUrl, char* data)
+String DFRobot_WiFi_IoT_Module_I2C::HTTPPost(const char* postUrl, const char* data)
 {
   uint8_t recvHTTPData[256];
   String url = "";
@@ -293,8 +292,7 @@ String DFRobot_WiFi_IoT_Module_I2C::HTTPPost(char* postUrl, char* data)
   url += ',';
   url += data;
   DBG(url);
-  manageFunction(IOT_RUN_COMMAND, HTTP_POST_URL_CON, (uint8_t*)url.c_str());
-  uint32_t startingTime = millis();
+  manageFunction(IOT_RUN_COMMAND, HTTP_POST_URL_CON, url);
     uint8_t state = parameterReturn(HTTP_NORMAL_RETURN, HTTP_ERROR_RETURN, &recvHTTPData[0]);
     if(state == 0){
       return (char*)recvHTTPData;
@@ -304,7 +302,7 @@ String DFRobot_WiFi_IoT_Module_I2C::HTTPPost(char* postUrl, char* data)
     return "error";
 }
 
-String DFRobot_WiFi_IoT_Module_UART::HTTPPost(char* postUrl, char* data)
+String DFRobot_WiFi_IoT_Module_UART::HTTPPost(const char* postUrl, const char* data)
 {
   String httpPostMag ="";
     httpPostMag += "|3|2|http://";
@@ -547,7 +545,7 @@ String DFRobot_WiFi_IoT_Module_I2C::getVersion()
   uint8_t state = parameterReturn(GET_VERSION, 0x00, &getVersionData[0]);
   if(state != 0){
     DBG("Parameter return failed");
-    return;
+    return "";
   }
   return (char*)getVersionData;
 }
@@ -559,7 +557,7 @@ void DFRobot_WiFi_IoT_Module_I2C::setCallBack(callback call)
 
 uint8_t DFRobot_WiFi_IoT_Module_I2C::loop()
 {
-  uint8_t i = 0, topic;
+  uint8_t topic;
   uint8_t buffer[3];
   if(readReg(IOT_COMMAND_REGTSTER, &buffer, 3) != 3){
     DBG("READ WIFI_IOT_ERROR!!!!!!");
@@ -596,7 +594,7 @@ uint8_t DFRobot_WiFi_IoT_Module_I2C::loop()
         free(data);
         return WIFI_IOT_ERROR;
       }else{
-        _callback(_topicName[topic], data);
+        _callback(_topicName[topic], (const char*)data);
         free(data);
       }
     }
@@ -604,7 +602,7 @@ uint8_t DFRobot_WiFi_IoT_Module_I2C::loop()
   return 1;
 }
 
-uint8_t DFRobot_WiFi_IoT_Module_I2C::IFTTTSendMessage(char *data1, char *data2, char *data3)
+uint8_t DFRobot_WiFi_IoT_Module_I2C::IFTTTSendMessage(const char *data1, const char *data2, const char *data3)
 {
   uint8_t recvHTTPData[256];
   String sendData = ""; 
@@ -626,7 +624,7 @@ uint8_t DFRobot_WiFi_IoT_Module_I2C::IFTTTSendMessage(char *data1, char *data2, 
   ur2 += ',';
   ur2 += sendData;
   DBG(url);
-  manageFunction(IOT_RUN_COMMAND,HTTP_POST_URL_CON,(char*)ur2.c_str(),ur2.length());
+  manageFunction(IOT_RUN_COMMAND, HTTP_POST_URL_CON, ur2);
   uint8_t state = parameterReturn(HTTP_NORMAL_RETURN, HTTP_ERROR_RETURN, &recvHTTPData[0]);
   if(state == 0){
     return 0;
@@ -634,7 +632,7 @@ uint8_t DFRobot_WiFi_IoT_Module_I2C::IFTTTSendMessage(char *data1, char *data2, 
   return 1;
 }
 
-uint8_t DFRobot_WiFi_IoT_Module_I2C::thingSpeakSendMessage(char* data1, char *data2, char *data3)
+uint8_t DFRobot_WiFi_IoT_Module_I2C::thingSpeakSendMessage(const char* data1, const char *data2, const char *data3)
 {
   String sendData = "";
   sendData += "update?api_key=";
@@ -647,7 +645,6 @@ uint8_t DFRobot_WiFi_IoT_Module_I2C::thingSpeakSendMessage(char* data1, char *da
   sendData += data3;
   uint8_t recvHTTPData[256];
   manageFunction(IOT_RUN_COMMAND, HTTP_GET_URL, sendData);
-  uint32_t startingTime = millis();
     uint8_t state = parameterReturn(HTTP_NORMAL_RETURN, HTTP_ERROR_RETURN, &recvHTTPData[0]);
     if(state == 0){
     return 0;
@@ -854,7 +851,7 @@ uint8_t DFRobot_WiFi_IoT_Module_UART::begin(void)
   return -1;
 }
 
-uint8_t DFRobot_WiFi_IoT_Module_UART::connectWifi(char *ssid , char *pwd )
+uint8_t DFRobot_WiFi_IoT_Module_UART::connectWifi(const char *ssid , const char *pwd )
 {
   if(_wifiSSID != ssid){
     _wifiSSID = ssid;
@@ -872,10 +869,11 @@ uint8_t DFRobot_WiFi_IoT_Module_UART::connectWifi(char *ssid , char *pwd )
   }
   if(_receiveStringIndex[wifiProtocol::wifiType] == WIFITYPE){//Connect Wifi
     DBG("WIFI");
-    if(_receiveStringIndex[wifiProtocol::wifiCode] == WIFIDISCONNECT && this->_wifiState == WIFICONNECTED){
-      _wifiState = WIFIDISCONNECT;
+    if(_receiveStringIndex[wifiProtocol::wifiCode] == WIFIDISCONNECT && this->_wifiState == 3){
+      _wifiState = 1;
       DBG("0");
     }else if(_receiveStringIndex[wifiProtocol::wifiCode] == WIFICONNECTED){
+      _wifiState = 3;
       DBG("0");
       return 0;//WiFi connected    
     }else if(_receiveStringIndex[wifiProtocol::wifiCode] == WIFICONNECTING){
@@ -886,7 +884,7 @@ uint8_t DFRobot_WiFi_IoT_Module_UART::connectWifi(char *ssid , char *pwd )
     return -1;
 }
 
-uint8_t DFRobot_WiFi_IoT_Module_UART::MQTTBegin(char *server = NULL, char *port = NULL, char *productID  = NULL, char *pwd = NULL, char* deviceID = NULL)
+uint8_t DFRobot_WiFi_IoT_Module_UART::MQTTBegin(const char *server, const char *port, const char *productID, const char *pwd, const char* deviceID)
 {
   if(_mqttState){
     String connectMsg = "";
@@ -940,7 +938,7 @@ uint8_t DFRobot_WiFi_IoT_Module_UART::MQTTBegin(char *server = NULL, char *port 
   return -1;
 }
 
-uint8_t DFRobot_WiFi_IoT_Module_UART::subscribe(char *topic = NULL)
+uint8_t DFRobot_WiFi_IoT_Module_UART::subscribe(const char *topic)
 {
   if(_topicCount >= MAXTOPICNUMBER){//Check whether the subscription is full
     return FULL_SUBSCRIPTINO;
@@ -992,7 +990,7 @@ String DFRobot_WiFi_IoT_Module_UART::getVersion(void)
   return _firmwareVersion;
 }
 
-uint8_t DFRobot_WiFi_IoT_Module_UART::publish(char *topic, String data)
+uint8_t DFRobot_WiFi_IoT_Module_UART::publish(const char *topic, String data)
 {
    
   String subscribeMsg = "";
@@ -1024,7 +1022,7 @@ uint8_t DFRobot_WiFi_IoT_Module_UART::publish(char *topic, String data)
   return -1;
 }
 
-uint8_t DFRobot_WiFi_IoT_Module_UART::publish(char *topic, uint8_t *data, uint16_t len)
+uint8_t DFRobot_WiFi_IoT_Module_UART::publish(const char *topic, uint8_t *data, uint16_t len)
 {
   //char* str = "";
   String subscribeMsg = "";
@@ -1071,7 +1069,7 @@ uint8_t DFRobot_WiFi_IoT_Module_UART::loop(void)
         DBG("MQTTRECEIVEMSG");
         if(this->_callback){
           DBG("_callback");
-          this->_callback((char*)_receiveStringIndex[mqttProtocol::mqttTopic].c_str(),(char*)_receiveStringIndex[mqttProtocol::mqttMessage].c_str());
+          this->_callback(_receiveStringIndex[mqttProtocol::mqttTopic].c_str(), _receiveStringIndex[mqttProtocol::mqttMessage].c_str());
           return 0;
         }
       }
@@ -1079,13 +1077,13 @@ uint8_t DFRobot_WiFi_IoT_Module_UART::loop(void)
       if(_receiveStringIndex[httpProtocol::httpCode] == "200"){
         DBG("0");
         if(this->_callback){
-          this->_callback((char*)_receiveStringIndex[httpProtocol::httpCode].c_str(),(char*)_receiveStringIndex[httpProtocol::httpMessage].c_str());
+          this->_callback(_receiveStringIndex[httpProtocol::httpCode].c_str(), _receiveStringIndex[httpProtocol::httpMessage].c_str());
           return 0;
         }
       }else{
         DBG("1");
         if(this->_callback){
-          this->_callback((char*)_receiveStringIndex[httpProtocol::httpCode].c_str(),(char*)_receiveStringIndex[httpProtocol::httpMessage].c_str());
+          this->_callback(_receiveStringIndex[httpProtocol::httpCode].c_str(), _receiveStringIndex[httpProtocol::httpMessage].c_str());
           return 0;
         }
       }
@@ -1097,7 +1095,7 @@ uint8_t DFRobot_WiFi_IoT_Module_UART::loop(void)
   }
 }
 
-uint8_t DFRobot_WiFi_IoT_Module_UART::IFTTTSendMessage(char *data1, char *data2, char *data3)
+uint8_t DFRobot_WiFi_IoT_Module_UART::IFTTTSendMessage(const char *data1, const char *data2, const char *data3)
 {
   String sendData = "";
   sendData += "{\"value1\":\"";
@@ -1112,7 +1110,7 @@ uint8_t DFRobot_WiFi_IoT_Module_UART::IFTTTSendMessage(char *data1, char *data2,
   url +=_iftttevent;
   url +=  "/with/key/";
   url += _iftttkey;
-  String test = HTTPPost((char* )url.c_str(), (char*)sendData.c_str());
+  String test = HTTPPost(url.c_str(), sendData.c_str());
   if(strcmp((const char*)test.c_str() ,"error") == 0){
     return -1;
   }else{
@@ -1120,7 +1118,7 @@ uint8_t DFRobot_WiFi_IoT_Module_UART::IFTTTSendMessage(char *data1, char *data2,
   }
 }
 
-uint8_t DFRobot_WiFi_IoT_Module::IFTTTBegin(char *event, char *key)
+uint8_t DFRobot_WiFi_IoT_Module::IFTTTBegin(const char *event, const char *key)
 {
   if((!event)||(!key)){
     return -1;
@@ -1130,7 +1128,7 @@ uint8_t DFRobot_WiFi_IoT_Module::IFTTTBegin(char *event, char *key)
   return 0;
 }
 
-uint8_t DFRobot_WiFi_IoT_Module::thingSpeakBegin(char *key)
+uint8_t DFRobot_WiFi_IoT_Module::thingSpeakBegin(const char *key)
 {
   if(!key){
     return -1;
@@ -1139,7 +1137,7 @@ uint8_t DFRobot_WiFi_IoT_Module::thingSpeakBegin(char *key)
   return 0;
 }
 
-uint8_t DFRobot_WiFi_IoT_Module_UART::thingSpeakSendMessage(char* data1, char *data2, char *data3)
+uint8_t DFRobot_WiFi_IoT_Module_UART::thingSpeakSendMessage(const char* data1, const char *data2, const char *data3)
 {
   String sendData = "update?api_key=";
   sendData += (String)_thingspeeakkey;
@@ -1150,7 +1148,7 @@ uint8_t DFRobot_WiFi_IoT_Module_UART::thingSpeakSendMessage(char* data1, char *d
   sendData += "&field3=";
   sendData += (String)data3;
  
-  String test = HTTPGet((char*)sendData.c_str());
+  String test = HTTPGet(sendData.c_str());
   if(strcmp((const char*)test.c_str() ,"error") == 0){
     return -1;
   }else{
@@ -1199,7 +1197,7 @@ uint8_t DFRobot_WiFi_IoT_Module_UART::splitString(String data[],String str,const
   return count;
 }
 
-uint8_t DFRobot_WiFi_IoT_Module::beebotteBegin(char *token)
+uint8_t DFRobot_WiFi_IoT_Module::beebotteBegin(const char *token)
 {
   if(!token){
     return -1;
@@ -1208,7 +1206,7 @@ uint8_t DFRobot_WiFi_IoT_Module::beebotteBegin(char *token)
   return 0;
 }
 
-uint8_t DFRobot_WiFi_IoT_Module_I2C::beebotteSendMessage(char *channel, char *resource ,char *data)
+uint8_t DFRobot_WiFi_IoT_Module_I2C::beebotteSendMessage(const char *channel, const char *resource ,const char *data)
 {
   String recv = "{\"data\":" + (String)data + "}\r\n";
   String postRequest ="v1/data/write/";
@@ -1220,7 +1218,7 @@ uint8_t DFRobot_WiFi_IoT_Module_I2C::beebotteSendMessage(char *channel, char *re
   postRequest += ',';
   postRequest += (String)recv;
   uint8_t recvHTTPData[256];
-  manageFunction(IOT_RUN_COMMAND, HTTP_POST_URL_CON, (uint8_t*)postRequest.c_str(),postRequest.length());
+  manageFunction(IOT_RUN_COMMAND, HTTP_POST_URL_CON, postRequest);
   //uint32_t startingTime = millis();
   
     uint8_t state = parameterReturn(HTTP_NORMAL_RETURN, HTTP_ERROR_RETURN, &recvHTTPData[0]);
@@ -1235,7 +1233,7 @@ uint8_t DFRobot_WiFi_IoT_Module_I2C::beebotteSendMessage(char *channel, char *re
     
 }
 
-uint8_t DFRobot_WiFi_IoT_Module_UART::beebotteSendMessage(char *channel, char *resource ,char *data)
+uint8_t DFRobot_WiFi_IoT_Module_UART::beebotteSendMessage(const char *channel, const char *resource ,const char *data)
 {
   String recv = "{\"data\":" + (String)data + "}\r\n";  
         
@@ -1246,7 +1244,7 @@ uint8_t DFRobot_WiFi_IoT_Module_UART::beebotteSendMessage(char *channel, char *r
   postRequest += "?token=";
   postRequest += (String)_token;
   DBG(postRequest);
-  String test = HTTPPost((char*)postRequest.c_str(),(char*)recv.c_str());
+  String test = HTTPPost(postRequest.c_str(), recv.c_str());
   if(strcmp((const char*)test.c_str() ,"error") == 0){
     return -1;
   }else{

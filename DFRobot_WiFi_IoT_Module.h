@@ -42,7 +42,7 @@ public:
    * @param pwd Wifi password
    * @return 0: WiFi connected, 1：WiFi connection error, 2: Connecting to WiFi
    */
-  virtual uint8_t connectWifi(char *ssid, char *pwd) = 0;
+  virtual uint8_t connectWifi(const char *ssid, const char *pwd) = 0;
   /**
    * @brief   MQTT configuration
    * @param server  Server address
@@ -51,26 +51,26 @@ public:
    * @param pwd   IOT access password
    * @return  Mqtt connection status
    */ 
-  virtual uint8_t MQTTBegin(char *server = NULL, char *port = NULL, char *productID  = NULL, char *pwd = NULL, char* deviceID = NULL) = 0;
+  virtual uint8_t MQTTBegin(const char *server = NULL, const char *port = NULL, const char *productID  = NULL, const char *pwd = NULL, const char* deviceID = NULL) = 0;
   /**
    * @brief     HTTP configuration                  
    * @param ip  Server address
    * @return True：succeeded, false: failed
    */
-  virtual uint8_t HTTPBegin(char *ip = NULL) = 0;
+  virtual uint8_t HTTPBegin(const char *ip = NULL) = 0;
   /**
    * @brief Title Subscription, up to 5
    * @param topic  Subscription channel 
    * @return 0 subscription succeeded, 1 subscription failed, 2 Reached subscription upper-limit, 3 subscription started, null None, 5 no subscription object
    */
-  virtual uint8_t subscribe(char *topic = NULL) = 0;
+  virtual uint8_t subscribe(const char *topic = NULL) = 0;
   /**
    * @brief  Send message to title
    * @param data Data to be sent  
    * @param topic  Subscription channel 
    * @return 0：succeeded, -1: failed
    */
-  virtual uint8_t publish(char *topic, String data) = 0;
+  virtual uint8_t publish(const char *topic, String data) = 0;
   /**
    * @brief  Send any message to the title
    * @param data Data to be sent  
@@ -78,17 +78,17 @@ public:
    * @param len Data length
    * @return 0：succeeded, -1: failed
    */
-  virtual uint8_t publish(char *topic, uint8_t *data, uint16_t len)=0;
+  virtual uint8_t publish(const char *topic, uint8_t *data, uint16_t len)=0;
   /**
    * @brief HTTPget URL
    */
-  virtual String HTTPGet(char *getUrl = NULL) = 0;
+  virtual String HTTPGet(const char *getUrl = NULL) = 0;
   /**
    * @brief HTTPPost
    * @param postUrl URL
    * @param data  Data to be sent
    */
-  virtual String HTTPPost(char* postUrl, char* data) = 0;
+  virtual String HTTPPost(const char* postUrl, const char* data) = 0;
   /**
    * @brief Get version number
    * @return Version information
@@ -108,46 +108,46 @@ public:
    * @param key   IFTTT registered event key
    * @return  True: configuration succeeded, false: configuration failed
    */
-  virtual uint8_t IFTTTBegin(char *event = NULL, char *key = NULL);
+  virtual uint8_t IFTTTBegin(const char *event = NULL, const char *key = NULL);
   /**
    * @brief IFTTT send Messages 
    * @param data1 Data to be sent
    */
-  virtual uint8_t IFTTTSendMessage(char *data1, char *data2, char *data3) = 0;
+  virtual uint8_t IFTTTSendMessage(const char *data1, const char *data2, const char *data3) = 0;
   /**
    * @brief Thingspeak configuration
    * @param key Thingspeak Access key
    * @return True: configuration succeeded, false: configuration failed
    */
-  uint8_t thingSpeakBegin(char *key);
+  uint8_t thingSpeakBegin(const char *key);
   /**
    * @brief Thingspeak send messages
    * @param data 1 Data to be sent 
    */
-  virtual uint8_t thingSpeakSendMessage(char* data1 = NULL, char *data2 = NULL, char *data3 = NULL) = 0;
+  virtual uint8_t thingSpeakSendMessage(const char* data1 = NULL, const char *data2 = NULL, const char *data3 = NULL) = 0;
   /**
    * 
    */
-  uint8_t beebotteBegin(char *token);
+  uint8_t beebotteBegin(const char *token);
   /**
    * 
    */
-  virtual uint8_t beebotteSendMessage(char *channel, char *resource ,char *data) = 0;
+  virtual uint8_t beebotteSendMessage(const char *channel, const char *resource ,const char *data) = 0;
 
 
   uint8_t _wifiState       = 254;
-  char *_topicName[5]      = {"0"};
-  char *_wifiSSID          = "0";
-  char *_mqttPort          = "0";
-  char *_mqttproductID     = "0";
-  char *_mqttPwd           = "0";
-  char *_mqttServer        = "0";
-  char *_MQTTTopic         = "0";
-  char *_iftttevent        = "0";
-  char *_iftttkey          = "0";
-  char *_thingspeeakkey    = "0";
-  char *_httpip            = "0";
-  char *_token             = "0";
+  const char *_topicName[5]      = {"0"};
+  const char *_wifiSSID          = "0";
+  const char *_mqttPort          = "0";
+  const char *_mqttproductID     = "0";
+  const char *_mqttPwd           = "0";
+  const char *_mqttServer        = "0";
+  const char *_MQTTTopic         = "0";
+  const char *_iftttevent        = "0";
+  const char *_iftttkey          = "0";
+  const char *_thingspeeakkey    = "0";
+  const char *_httpip            = "0";
+  const char *_token             = "0";
   TwoWire *_pWire;
   uint8_t _address;
   callback _callback       = NULL;
@@ -275,7 +275,7 @@ public:
    * @param pwd Wifi password
    * @return 0: Connected to WiFi, 1：WiFi connection error, 2: Connecting to WiFi
    */
-  uint8_t connectWifi(char *ssid, char *pwd);
+  uint8_t connectWifi(const char *ssid, const char *pwd);
   /**
    * @brief MQTT configuration
    * @param server Server address
@@ -284,26 +284,26 @@ public:
    * @param pwd  IOT access password
    * @return Mqtt connection status
    */ 
-  uint8_t MQTTBegin(char *server = NULL, char *port = NULL, char *productID  = NULL, char *pwd = NULL, char* deviceID = NULL);
+  uint8_t MQTTBegin(const char *server = NULL, const char *port = NULL, const char *productID  = NULL, const char *pwd = NULL, const char* deviceID = NULL);
   /**
    * @brief HTTP configuration                  
    * @param ip Server address
    * @return True：succeeded, false: failed
    */
-  uint8_t HTTPBegin(char *ip = NULL);
+  uint8_t HTTPBegin(const char *ip = NULL);
   /**
    * @brief Title Subscription, up to 5
    * @param topic  Subscription channel 
    * @return 0 subscription succeeded, 1 subscription failed, 2 Reached subscription upper-limit, 3 subscription started, null None, 5 no subscription object
    */
-  uint8_t subscribe(char *topic = NULL);
+  uint8_t subscribe(const char *topic = NULL);
   /**
    * @brief Send message to title
    * @param data Data to be sent
    * @param topic    Subscription channel 
    * @return 0：succeeded, -1: failed
    */
-  uint8_t publish(char *topic, String data);
+  uint8_t publish(const char *topic, String data);
   /**
    * @brief  Send any message to the title
    * @param data Data to be sent  
@@ -311,17 +311,17 @@ public:
    * @param len Data length
    * @return 0：succeeded, -1: failed
    */
-  uint8_t publish(char *topic, uint8_t *data, uint16_t len);
+  uint8_t publish(const char *topic, uint8_t *data, uint16_t len);
   /**
    * @brief HTTPget URL
    */
-  String HTTPGet(char *getUrl = NULL);
+  String HTTPGet(const char *getUrl = NULL);
   /**
    * @brief HTTPPost
    * @param postUrl URL
    * @param data Data to be sent
    */
-  String HTTPPost(char* postUrl, char* data);
+  String HTTPPost(const char* postUrl, const char* data);
   /**
    * @brief Get version number
    * @return Version information
@@ -341,37 +341,37 @@ public:
    * @param key   IFTTT registered event key
    * @return  True: configuration succeeded, false: configuration failed
    */
-  uint8_t IFTTTBegin(char *event = NULL, char *key = NULL){
+  uint8_t IFTTTBegin(const char *event = NULL, const char *key = NULL){
     return DFRobot_WiFi_IoT_Module::IFTTTBegin(event,key);
   }
   /**
    * @brief IFTTT send Messages 
    * @param data1 Data to be sent 
    */
-  uint8_t IFTTTSendMessage(char *data1, char *data2, char *data3);
+  uint8_t IFTTTSendMessage(const char *data1, const char *data2, const char *data3);
   /**
    * @brief Thingspeak configuration
    * @param key Thingspeak Access key
    * @return True: configuration succeeded, false: configuration failed
    */
-  uint8_t thingSpeakBegin(char *key){
+  uint8_t thingSpeakBegin(const char *key){
     return DFRobot_WiFi_IoT_Module::thingSpeakBegin(key);
   }
   /**
    * @brief Thingspeak send messages
    * @param data 1 Data to be sent 
    */
-  uint8_t thingSpeakSendMessage(char* data1 = NULL, char *data2 = NULL, char *data3 = NULL);
+  uint8_t thingSpeakSendMessage(const char* data1 = NULL, const char *data2 = NULL, const char *data3 = NULL);
   /**
    * 
    */
-   uint8_t beebotteBegin(char *token){
+   uint8_t beebotteBegin(const char *token){
     return DFRobot_WiFi_IoT_Module::beebotteBegin(token);
   }
   /**
    * 
    */
-  uint8_t beebotteSendMessage(char *channel, char *resource ,char *data);
+  uint8_t beebotteSendMessage(const char *channel, const char *resource ,const char *data);
   
   
 private:
@@ -534,7 +534,7 @@ public:
    * @param pwd Wifi password
    * @return 0: Connected to WiFi, 1：WiFi connection error, 2: Connecting to WiFi
    */
-  uint8_t connectWifi(char *ssid, char *pwd);
+  uint8_t connectWifi(const char *ssid, const char *pwd);
   /**
    * @brief MQTT configuration
    * @param server Server address
@@ -543,13 +543,13 @@ public:
    * @param pwd  IOT access password
    * @return Mqtt connection status
    */ 
-  uint8_t MQTTBegin(char *server = NULL, char *port = NULL, char *productID  = NULL, char *pwd = NULL, char* deviceID = NULL);
+  uint8_t MQTTBegin(const char *server = NULL, const char *port = NULL, const char *productID  = NULL, const char *pwd = NULL, const char* deviceID = NULL);
   /**
    * @brief HTTP configuration                  
    * @param ip Server address
    * @return True：succeeded, false: failed
    */
-  uint8_t HTTPBegin(char *ip = NULL);/*{
+  uint8_t HTTPBegin(const char *ip = NULL);/*{
     if( _httpip != ip){
       _httpip = ip;
       return 0;
@@ -561,14 +561,14 @@ public:
    * @param topic  Subscription channel 
    * @return 0 subscription succeeded, 1 subscription failed, 2 Reached subscription upper-limit, 3 subscription started, null None, 5 no subscription object
    */
-  uint8_t subscribe(char *topic = NULL);
+  uint8_t subscribe(const char *topic = NULL);
   /**
    * @brief Send message to title
    * @param data Data to be sent
    * @param topic Subscription channel 
    * @return 0：succeeded, -1: failed
    */
-  uint8_t publish(char *topic, String data);
+  uint8_t publish(const char *topic, String data);
   /**
    * @brief  Send any message to the title
    * @param data Data to be sent  
@@ -576,17 +576,17 @@ public:
    * @param len Data length
    * @return 0：succeeded, -1: failed
    */
-  uint8_t publish(char *topic, uint8_t *data, uint16_t len);
+  uint8_t publish(const char *topic, uint8_t *data, uint16_t len);
   /**
    * @brief HTTPget URL
    */
- String HTTPGet(char *getUrl = NULL);
+  String HTTPGet(const char *getUrl = NULL);
   /**
    * @brief HTTPPost
    * @param postUrl URL
    * @param data Data to be sent
    */
-  String HTTPPost(char* postUrl, char* data);
+  String HTTPPost(const char* postUrl, const char* data);
   /**
    * @brief Get version number
    * @return Version information
@@ -608,37 +608,37 @@ public:
    * @param key   IFTTT registered event key
    * @return  True: configuration succeeded, false: configuration failed
    */
-  uint8_t IFTTTBegin(char *event = NULL, char *key = NULL){
+  uint8_t IFTTTBegin(const char *event = NULL, const char *key = NULL){
     return DFRobot_WiFi_IoT_Module::IFTTTBegin(event,key);
   }
   /**
    * @brief IFTTT send Messages 
    * @param data1 Data to be sent 
    */
-  uint8_t IFTTTSendMessage(char *data1, char *data2, char *data3);
+  uint8_t IFTTTSendMessage(const char *data1, const char *data2, const char *data3);
   /**
    * @brief Thingspeak configuration
    * @param key Thingspeak Access key
    * @return True: configuration succeeded, false: configuration failed
    */
-  uint8_t thingSpeakBegin(char *key){
+  uint8_t thingSpeakBegin(const char *key){
     return DFRobot_WiFi_IoT_Module::thingSpeakBegin(key);
   }
   /**
    * @brief Thingspeak send messages
    * @param data 1 Data to be sent 
    */
-  uint8_t thingSpeakSendMessage(char* data1 = NULL, char *data2 = NULL, char *data3 = NULL);
+  uint8_t thingSpeakSendMessage(const char* data1 = NULL, const char *data2 = NULL, const char *data3 = NULL);
   /**
    * 
    */
-  uint8_t beebotteBegin(char *token){
+  uint8_t beebotteBegin(const char *token){
     return DFRobot_WiFi_IoT_Module::beebotteBegin(token);
   }
   /**
    * 
    */
-  uint8_t beebotteSendMessage(char *channel, char *resource ,char *data);
+  uint8_t beebotteSendMessage(const char *channel, const char *resource ,const char *data);
 private:
   #define PING_OK  1
   #define ERROR    0
@@ -650,7 +650,7 @@ private:
   String _firmwareVersion = "xxx"; 
   bool   _mqttState = true;
   String _separator = "|";
-  char* _topicArray[MAXTOPICNUMBER];
+  const char* _topicArray[MAXTOPICNUMBER];
   uint8_t _topicCount = 0;
   String _subscribeState = "";
   uint8_t _sta = 0;
